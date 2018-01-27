@@ -81,10 +81,10 @@ public class LoginFrame extends JFrame {
 		passwordTxt.setText("admin");
 		try {
 			socket = new Socket("127.0.0.1", 60702);
-			receiveThread=new Thread(new ClientReceiveThread(socket,this));
+			receiveThread = new Thread(new ClientReceiveThread(socket, this));
 			out = new PrintWriter(socket.getOutputStream(), true);
 			receiveThread.start();
-			
+
 		} catch (UnknownHostException e2) {
 			JOptionPane.showMessageDialog(null, "链接失败!");
 			// e2.printStackTrace();

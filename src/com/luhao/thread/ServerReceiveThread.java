@@ -43,8 +43,8 @@ public class ServerReceiveThread implements Runnable{
 				receiveData(str);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//System.out.println("客户端非正常退出");
+			//e.printStackTrace();
 		}
 		
 	}
