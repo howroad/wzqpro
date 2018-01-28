@@ -5,26 +5,39 @@ package com.luhao.frame;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.luhao.bean.User;
+import com.luhao.seivice.impl.UserServiceImpl;
+import com.luhao.service.IUserService;
 
 /**
  * @author howroad
  * @Date 2018年1月26日
  * @version 1.0
- * 应该有一个socket做属性,thread不需要了,应该关闭login的out
  */
 public class ChatFrame extends JFrame{
 	
+	private IUserService ius=new UserServiceImpl();
+	private Socket socket ;
+	private PrintWriter out;
 	private User user;
 	
 	private JPanel contentPanel=new JPanel(new BorderLayout());
@@ -34,7 +47,7 @@ public class ChatFrame extends JFrame{
 	
 	private JPanel showPanel=new JPanel(new BorderLayout());
 	private JPanel sendPanel=new JPanel(new BorderLayout());
-	private JPanel btnPanel=new JPanel(new BorderLayout());
+	private JPanel btnPanel=new JPanel(new GridLayout(1,2,5,5));
 	
 	private JLabel leftLabel=new JLabel("用户：");
 	private JList<User> nameList=new JList<User>();
@@ -48,9 +61,11 @@ public class ChatFrame extends JFrame{
 	private JScrollPane jspsend=new JScrollPane(sendText);
 	
 	private JButton sendBtn=new JButton("发送");
+	private JButton checkUserBtn=new JButton("查看信息");
 	
-	public ChatFrame(User user) {
+	public ChatFrame(User user,Socket socket) {
 		this.user=user;
+		this.socket=socket;
 		this.setLayout(null);
 		this.setBounds(0, 0, 510, 410);
 		this.setLocationRelativeTo(null);
@@ -62,6 +77,7 @@ public class ChatFrame extends JFrame{
 		
 		this.showPanel.add(jspRight);
 		this.sendPanel.add(jspsend);
+		this.btnPanel.add(checkUserBtn);
 		this.btnPanel.add(sendBtn);
 		
 		this.rightPanel.add(showPanel,BorderLayout.NORTH);
@@ -87,16 +103,63 @@ public class ChatFrame extends JFrame{
 		
 		nameList.setFixedCellWidth(120);
 		nameList.setModel(model);
-		model.addElement(user);
 		
+		try {
+			//应该可以把LoginFrame的out传过来,但是不知道dispose了之后流还在不?
+			this.out=new PrintWriter(this.socket.getOutputStream(),true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
+		this.sendBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				sendMessage();
+			}
+		});
+		this.sendText.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					sendMessage();
+				}
+			}
+		});
+		this.checkUserBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(ChatFrame.this.nameList.getSelectedValue()==null) {
+					JOptionPane.showMessageDialog(null, "请选择一个玩家!");
+					return;
+				}
+				new UserInfoDelDialog(ChatFrame.this.nameList.getSelectedValue().getId());
+			}
+		});
 		
 	}
 	
-	
-	
-	
-	
+	public void setShowTxt(String msg) {
+		this.showText.setText(showText.getText()+msg+"\n");
+	}
+	public void addList(int userId) {
+		User u=ius.getById(userId);
+		model.addElement(u);
+	}
+	public void updateList(int[] userIds) {
+		model.removeAllElements();
+		model.addElement(user);
+		for(int i=0;i<userIds.length;i++) {
+			if(this.user.getId()==userIds[i]) {
+				continue;
+			}
+			User u=ius.getById(userIds[i]);
+			model.addElement(u);
+		}
+	}
+	public void sendMessage() {
+		out.println("<MESSAGE>"+sendText.getText().trim()+"<MESSAGE>");
+		this.sendText.setText(null);
+	}
 	
 	
 	

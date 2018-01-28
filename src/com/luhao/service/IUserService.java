@@ -14,4 +14,5 @@ public interface IUserService {
 	public boolean isexsit(String username);
 	public int add(User user);
 	public User login(User user);
+	public User getById(int id);
 }

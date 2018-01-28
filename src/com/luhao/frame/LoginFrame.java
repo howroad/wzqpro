@@ -90,6 +90,7 @@ public class LoginFrame extends JFrame {
 			// e2.printStackTrace();
 		} catch (IOException e2) {
 			JOptionPane.showMessageDialog(null, "链接失败!");
+			System.exit(0);
 			// e2.printStackTrace();
 		}
 

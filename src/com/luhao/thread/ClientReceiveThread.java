@@ -9,10 +9,13 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import com.luhao.bean.User;
 import com.luhao.frame.ChatFrame;
 import com.luhao.frame.LoginFrame;
 import com.luhao.util.ReceiveUtil;
+import com.luhao.util.MessageUtil;
 
 /**
  * @author howroad
@@ -56,10 +59,26 @@ public class ClientReceiveThread implements Runnable{
 			 String loginStr=str.trim().replace("<LOGIN>", "");
 			 this.user=ReceiveUtil.toUser(loginStr);
 			 enterYard();
+			 return;
+		 }
+		 if(str.equals(MessageUtil.LoginFailed)) {
+			 JOptionPane.showMessageDialog(null, "用户名或密码错误!");
+			 return;
+		 }
+		 if(str.startsWith("<MESSAGE>")&&str.endsWith("<MESSAGE>")) {
+			 String message=str.trim().replace("<MESSAGE>", "");
+			 this.chatFrame.setShowTxt(message);
+			 return;
+		 }
+		 if(str.startsWith("<USERLIST>")&&str.endsWith("<USERLIST>")) {
+			 String message=str.trim().replace("<USERLIST>", "");
+			 int [] userIds=MessageUtil.StringToUserIds(message);
+			 this.chatFrame.updateList(userIds);
+			 return;
 		 }
 	 }
 	 private void enterYard() {
-		 this.chatFrame=new ChatFrame(user);
+		 this.chatFrame=new ChatFrame(user,socket);
 		 chatFrame.setVisible(true);
 		 loginFrame.dispose();
 	 }

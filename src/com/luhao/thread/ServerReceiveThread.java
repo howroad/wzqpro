@@ -8,11 +8,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.luhao.bean.User;
 import com.luhao.seivice.impl.UserServiceImpl;
 import com.luhao.service.IUserService;
 import com.luhao.util.ReceiveUtil;
+import com.luhao.util.MessageUtil;
 
 /**
  * @author howroad
@@ -21,12 +24,14 @@ import com.luhao.util.ReceiveUtil;
  */
 public class ServerReceiveThread implements Runnable{
 	private IUserService ius=new UserServiceImpl();
+	private Map<Integer,ServerReceiveThread> map;
 	private BufferedReader br;
-	private PrintWriter out;
-	private Socket socket;
+	public PrintWriter out;
+	public Socket socket;
 	private User user;
-	public ServerReceiveThread(Socket socket) {
+	public ServerReceiveThread(Socket socket,Map<Integer,ServerReceiveThread> map) {
 		this.socket=socket;
+		this.map=map;
 		try {
 			br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out=new PrintWriter(socket.getOutputStream(),true);
@@ -54,11 +59,21 @@ public class ServerReceiveThread implements Runnable{
 		 if(str.startsWith("<LOGIN>")&&str.endsWith("<LOGIN>")) {
 			 String loginStr=str.trim().replace("<LOGIN>", "");
 			 user=ius.login(ReceiveUtil.toUser(loginStr));
-			 if(user!=null) {
-				 System.out.println(user+"已登陆");
+			 if(user!=null&&user.getId()>0) {
+				 System.out.println(user+"已登陆!");
 				 out.println("<LOGIN>"+user.toStreamString()+"<LOGIN>");
+				 //System.out.println(user.getId());
+				 map.put(user.getId(), this);
+				 MessageUtil.sendMessageToAll(map, user+"上线了!");
+				 MessageUtil.sendUserListToAll(map);
+			 }else {
+				 System.out.println(user+"登陆失败!");
+				 out.println(MessageUtil.LoginFailed);
 			 }
-			 
+		 }
+		 if(str.startsWith("<MESSAGE>")&&str.endsWith("<MESSAGE>")) {
+			 String loginStr=str.trim().replace("<MESSAGE>", "");
+			 MessageUtil.sendMessageToAll(map, user+":"+loginStr);
 		 }
 	 }
 

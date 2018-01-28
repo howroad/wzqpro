@@ -15,4 +15,5 @@ public interface IUserDao extends IBaseDao<User,Integer>{
 	public User checkUser(User user);
 	public boolean isexsit(String username);
 	public DBResult add(User user);
+	public User findById(int id);
 }

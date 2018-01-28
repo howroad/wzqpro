@@ -27,6 +27,8 @@ public class UserDaoImpl extends BaseDaoAdapterImpl<User,Integer> implements IUs
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally {
+			DBSessionFactory.closeSession();
 		}
 		if(u.getId()<1) {
 			return null;
@@ -45,6 +47,8 @@ public class UserDaoImpl extends BaseDaoAdapterImpl<User,Integer> implements IUs
 			b=this.fetchSingleEntity(DBSessionFactory.openSession().excuteQuery("select * from tb_user where username=?", username)).getId()>0;
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally {
+			DBSessionFactory.closeSession();
 		}
 		DBSessionFactory.closeSession();
 		return b;
@@ -62,8 +66,22 @@ public class UserDaoImpl extends BaseDaoAdapterImpl<User,Integer> implements IUs
 			dbr=DBSessionFactory.openSession().excuteUpdate("insert into tb_user(id,username,password,nickname,registtime) values(null,?,?,?,now())", user.getUsername(),user.getPassword(),user.getNickname());
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally {
+			DBSessionFactory.closeSession();
 		}
 		return dbr;
+	}
+
+	@Override
+	public User findById(int id) {
+		try {
+			return this.fetchSingleEntity(DBSessionFactory.openSession().excuteQuery("select * from tb_user where id=?", id));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			DBSessionFactory.closeSession();
+		}
+		return null;
 	}
 	
 }

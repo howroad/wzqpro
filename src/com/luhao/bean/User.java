@@ -48,7 +48,7 @@ public class User {
 	}
 	@Override
 	public String toString() {
-		return username+nickname;
+		return nickname;
 	}
 	public String toStreamString() {
 		id=id==0?-1:id;
