@@ -9,7 +9,7 @@ import com.luhao.dao.IFiveDao;
 import com.luhao.dao.IUserDao;
 import com.luhao.dao.impl.FiveDaoImpl;
 import com.luhao.dao.impl.UserDaoImpl;
-import com.luhao.server.IFiveService;
+import com.luhao.service.IFiveService;
 import com.luhao.vo.FiveVO;
 
 /**

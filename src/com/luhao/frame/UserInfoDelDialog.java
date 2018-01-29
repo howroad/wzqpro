@@ -7,7 +7,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 
 import com.luhao.seivice.impl.FiveServiceImpl;
-import com.luhao.server.IFiveService;
+import com.luhao.service.IFiveService;
 import com.luhao.vo.FiveVO;
 
 /**

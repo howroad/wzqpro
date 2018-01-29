@@ -35,6 +35,10 @@ import com.luhao.service.IUserService;
  */
 public class ChatFrame extends JFrame{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IUserService ius=new UserServiceImpl();
 	private Socket socket ;
 	private PrintWriter out;
@@ -47,7 +51,7 @@ public class ChatFrame extends JFrame{
 	
 	private JPanel showPanel=new JPanel(new BorderLayout());
 	private JPanel sendPanel=new JPanel(new BorderLayout());
-	private JPanel btnPanel=new JPanel(new GridLayout(1,2,5,5));
+	private JPanel btnPanel=new JPanel(new GridLayout(1,3,5,5));
 	
 	private JLabel leftLabel=new JLabel("用户：");
 	private JList<User> nameList=new JList<User>();
@@ -62,6 +66,7 @@ public class ChatFrame extends JFrame{
 	
 	private JButton sendBtn=new JButton("发送");
 	private JButton checkUserBtn=new JButton("查看信息");
+	private JButton fightBtn=new JButton("对战");
 	
 	public ChatFrame(User user,Socket socket) {
 		this.user=user;
@@ -78,11 +83,12 @@ public class ChatFrame extends JFrame{
 		this.showPanel.add(jspRight);
 		this.sendPanel.add(jspsend);
 		this.btnPanel.add(checkUserBtn);
+		this.btnPanel.add(fightBtn);
 		this.btnPanel.add(sendBtn);
 		
-		this.rightPanel.add(showPanel,BorderLayout.NORTH);
-		this.rightPanel.add(sendPanel,BorderLayout.CENTER);
-		this.rightPanel.add(btnPanel,BorderLayout.SOUTH);
+		this.rightPanel.add(showPanel);
+		this.rightPanel.add(sendPanel);
+		this.rightPanel.add(btnPanel);
 		
 		this.contentPanel.add(leftPanel,BorderLayout.WEST);
 		this.contentPanel.add(rightPanel,BorderLayout.CENTER);
@@ -105,7 +111,7 @@ public class ChatFrame extends JFrame{
 		nameList.setModel(model);
 		
 		try {
-			//应该可以把LoginFrame的out传过来,但是不知道dispose了之后流还在不?
+			//应该可以把LoginFrame的out传过来,但是不知道dispose了之后流还在不
 			this.out=new PrintWriter(this.socket.getOutputStream(),true);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -135,6 +141,22 @@ public class ChatFrame extends JFrame{
 				new UserInfoDelDialog(ChatFrame.this.nameList.getSelectedValue().getId());
 			}
 		});
+		this.fightBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(ChatFrame.this.nameList.getSelectedValue()==null) {
+					JOptionPane.showMessageDialog(null, "请选择一个玩家!");
+					return;
+				}
+				int fightId=ChatFrame.this.nameList.getSelectedValue().getId();
+				if(fightId==user.getId()) {
+					JOptionPane.showMessageDialog(null, "你是周伯通吗?");
+					return;
+				}
+				fightToUser(fightId);
+			}
+			
+		});
 		
 	}
 	
@@ -161,9 +183,18 @@ public class ChatFrame extends JFrame{
 		this.sendText.setText(null);
 	}
 	
+	public void fightToUser(int userId) {
+		out.println("<FIGHT>"+userId+"<FIGHT>");
+		this.fightBtn.setText("已申请");
+		this.fightBtn.setEnabled(false);
+	}
 	
-	
-	
+	public void receiveFight(User otherUser) {
+		int answer=JOptionPane.showConfirmDialog(null, otherUser.getNickname()+"申请与你对战,是否接受?");
+		if(answer==0) {
+			out.println("<STARTFIVE>"+otherUser.getId()+"<STARTFIVE>");
+		}
+	}
 	
 	
 	

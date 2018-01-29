@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.luhao.server;
+package com.luhao.service;
 
 import com.luhao.vo.FiveVO;
 

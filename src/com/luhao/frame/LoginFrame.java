@@ -31,6 +31,10 @@ import com.luhao.util.CheckUtil;
  * @version 1.0
  */
 public class LoginFrame extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IUserService ius = new UserServiceImpl();
 	private Thread receiveThread;
 	private PrintWriter out;
