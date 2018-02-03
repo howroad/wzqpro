@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -24,10 +26,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import com.luhao.bean.User;
-import com.luhao.seivice.impl.AnswerServiceImpl3;
-import com.luhao.seivice.impl.UserServiceImpl;
 import com.luhao.service.IAnswerService;
 import com.luhao.service.IUserService;
+import com.luhao.service.impl.AnswerServiceImpl3;
+import com.luhao.service.impl.UserServiceImpl;
 
 
 public class FiveMap extends JFrame{
@@ -49,7 +51,7 @@ public class FiveMap extends JFrame{
 	
 	private JButton readyBtn = new JButton("准备");
 	private JButton startBtn = new JButton("开始");
-	private JButton exitBtn =new JButton("退出");
+	private JButton heqiBtn =new JButton("求和");
 	
 	private JTextArea showText=new JTextArea();
 	private JTextArea sendText=new JTextArea();
@@ -65,10 +67,14 @@ public class FiveMap extends JFrame{
 	private User otherUser;
 	private PrintWriter out;
 	private boolean myTurn;
+	private boolean isStart;
+	public boolean isReady;
+	private ChatFrame chatFrame;
 	
 
 	public FiveMap(Socket socket,ChatFrame chatFrame,int otherUserId,byte color) {
 		this.otherUser=ius.getById(otherUserId);
+		this.chatFrame=chatFrame;
 		try {
 			this.out=new PrintWriter(socket.getOutputStream(),true);
 		} catch (IOException e1) {
@@ -77,13 +83,13 @@ public class FiveMap extends JFrame{
 		this.right.setBackground(Color.MAGENTA);
 		readyBtn.setBounds(5, 5, 100, 30);
 		startBtn.setBounds(5, 40, 100, 30);
-		exitBtn.setBounds(5, 75, 100, 30);
+		heqiBtn.setBounds(5, 75, 100, 30);
 		showText.setBounds(5, 110, 180, MYWIDTH-250);
 		sendText.setBounds(5, MYWIDTH-125, 180, 60);
 		sendBtn.setBounds(5, MYWIDTH-60, 100, 30);
 		right.add(readyBtn);
 		right.add(startBtn);
-		right.add(exitBtn);
+		right.add(heqiBtn);
 		right.add(showText);
 		right.add(sendText);
 		right.add(sendBtn);
@@ -102,7 +108,9 @@ public class FiveMap extends JFrame{
 		//准备
 		readyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				isReady=true;
+				out.println("<READY>");
+				setShowTxt("我方已准备");
 			}
 		});
 		//开始
@@ -112,7 +120,8 @@ public class FiveMap extends JFrame{
 			}
 
 		});
-		exitBtn.addActionListener(new ActionListener() {
+		//求和
+		heqiBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
 			}
@@ -123,20 +132,39 @@ public class FiveMap extends JFrame{
 			public void windowClosing(WindowEvent arg0) {
 				int answer=JOptionPane.showConfirmDialog(null, "你确定要关闭吗?");
 				if(answer==0) {
-					FiveMap.this.dispose();
-					chatFrame.setVisible(true);
+					if(isStart) {
+						System.out.println("游戏逃跑");
+						out.println("<TAOPAO>");
+					}
+					exit();
 				}
 			}
 			
 		});
-		this.setTitle("五子棋 by howroad V1.5");
+		this.sendBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				sendMessage();
+			}
+		});
+		this.sendText.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					sendMessage();
+				}
+			}
+		});
+		
+		this.setTitle("五子棋 by howroad V2.0 [正在对战: "+otherUser+"]");
 		
 		
-		init(color);
+		initAndStart(color);
 	}
 
-	// 初始化棋子
-	public void init(byte mycolor) {
+	// 初始化并开始
+	public void initAndStart(byte mycolor) {
+		this.readyBtn.setEnabled(false);
 		for (int i = 0; i < LENGTH; i++) {
 			for (int j = 0; j < LENGTH; j++) {
 				qi[i][j] = 0;
@@ -146,6 +174,7 @@ public class FiveMap extends JFrame{
 		this.otherColor=(byte) (this.color==1?2:1);
 		answerX = (LENGTH - 1) / 2;
 		answerY = (LENGTH - 1) / 2;
+		isStart=true;
 		if(color==1) {
 			myTurn=true;
 		}
@@ -198,8 +227,12 @@ public class FiveMap extends JFrame{
 		myTurn=false;
 		repaint();
 		if (ias.isWin(qi, color, answerX, answerY)) {
+			out.println("<WIN>");
 			JOptionPane.showMessageDialog(null, color == 1 ? "黑棋获胜！" : "白棋获胜！");
+			this.readyBtn.setEnabled(true);
+			isStart=false;
 			myTurn = false;
+			isReady=false;
 			return;
 		}
 	}
@@ -212,19 +245,35 @@ public class FiveMap extends JFrame{
 		repaint();
 		if (ias.isWin(qi, otherColor, answerX, answerY)) {
 			JOptionPane.showMessageDialog(null, otherColor == 1 ? "黑棋获胜！" : "白棋获胜！");
+			out.println("<LOST>");
+			this.readyBtn.setEnabled(true);
+			isStart=false;
 			myTurn = false;
+			isReady=false;
 			return;
 		}
 	}
 	//开始游戏
 	public void start() {
-		this.myTurn=true;
+		this.readyBtn.setEnabled(false);
+		out.println("<STARTFIVE>"+otherUser.getId()+"<STARTFIVE>");
 	}
 	//显示信息
 	public void setShowTxt(String msg) {
 		this.showText.setText(showText.getText()+msg+"\n");
 	}
 	//关闭
+	public void exit() {
+		out.println("<EXIT_FIVE_GAME>");
+		FiveMap.this.dispose();//关闭棋盘
+		chatFrame.initBtn();
+		chatFrame.setVisible(true);//打开聊天大厅
+	}
+	//对战中聊天
+	public void sendMessage() {
+		out.println("<FIGHTMESSAGE>"+sendText.getText().trim()+"<FIGHTMESSAGE>");
+		this.sendText.setText(null);
+	}
 	
 	// 内部类,用于监听鼠标动作
 	public class MyMouseListener extends MouseAdapter {

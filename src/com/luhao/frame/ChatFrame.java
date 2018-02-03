@@ -25,8 +25,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.luhao.bean.User;
-import com.luhao.seivice.impl.UserServiceImpl;
 import com.luhao.service.IUserService;
+import com.luhao.service.impl.UserServiceImpl;
 
 /**
  * @author howroad
@@ -195,7 +195,10 @@ public class ChatFrame extends JFrame{
 			out.println("<STARTFIVE>"+otherUser.getId()+"<STARTFIVE>");
 		}
 	}
-	
+	public void initBtn() {
+		this.fightBtn.setText("申请对战");
+		this.fightBtn.setEnabled(true);
+	}
 	
 	
 }

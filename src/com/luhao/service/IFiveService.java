@@ -12,4 +12,8 @@ import com.luhao.vo.FiveVO;
  */
 public interface IFiveService {
 	public FiveVO findById(int id);
+	public void win(int userId);
+	public void lost(int userId);
+	public void ping(int userId);
+	public void taopao(int userId);
 }

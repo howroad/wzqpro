@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.luhao.seivice.impl;
+package com.luhao.service.impl;
 
 import com.luhao.bean.User;
 import com.luhao.dao.IFiveDao;

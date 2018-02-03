@@ -1,4 +1,4 @@
-package com.luhao.seivice.impl;
+package com.luhao.service.impl;
 
 /**
  * 小学生版本

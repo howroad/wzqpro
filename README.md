@@ -17,3 +17,27 @@
 4.几个文件位置的调整
 5.其他的改动
 
+20180203改动:
+1.数据库微调
+mysql> desc tb_user;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
+| username   | varchar(20) | YES  |     | NULL    |                |
+| password   | varchar(20) | YES  |     | NULL    |                |
+| nickname   | varchar(20) | YES  |     | NULL    |                |
+| registtime | datetime    | YES  |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+mysql> desc tb_wzq;
++---------+---------+------+-----+---------+----------------+
+| Field   | Type    | Null | Key | Default | Extra          |
++---------+---------+------+-----+---------+----------------+
+| id      | int(11) | NO   | PRI | NULL    | auto_increment |
+| user_id | int(11) | YES  |     | NULL    |                |
+| win     | int(11) | YES  |     | NULL    |                |
+| lost    | int(11) | YES  |     | NULL    |                |
+| ping    | int(11) | YES  |     | NULL    |                |
+| taopao  | int(11) | YES  |     | NULL    |                |
+| score   | int(11) | YES  |     | NULL    |                |
++---------+---------+------+-----+---------+----------------+

@@ -10,8 +10,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import com.luhao.bean.User;
-import com.luhao.seivice.impl.UserServiceImpl;
+import com.luhao.service.IFiveService;
 import com.luhao.service.IUserService;
+import com.luhao.service.impl.FiveServiceImpl;
+import com.luhao.service.impl.UserServiceImpl;
 import com.luhao.test.MyServer;
 import com.luhao.util.MessageUtil;
 import com.luhao.util.ReceiveUtil;
@@ -23,10 +25,12 @@ import com.luhao.util.ReceiveUtil;
  */
 public class ServerReceiveThread implements Runnable{
 	private IUserService ius=new UserServiceImpl();
+	private IFiveService ifs=new FiveServiceImpl();
 	private BufferedReader br;
 	public PrintWriter out;
 	public Socket socket;
 	private User user;
+	private int otherId;
 	private MyServer myServer;
 	public ServerReceiveThread(Socket socket,MyServer myServer) {
 		this.socket=socket;
@@ -47,7 +51,17 @@ public class ServerReceiveThread implements Runnable{
 				receiveData(str);
 			}
 		} catch (IOException e) {
-			System.out.println("客户端非正常退出");
+			if(myServer.fightSet.contains(user.getId())) {
+				System.out.println(user+"游戏中断线!");
+				ifs.taopao(user.getId());
+				myServer.fightSet.remove(user.getId());//从对战人中删除
+				myServer.map.get(otherId).out.println("<TAOPAO>");//给对方发送逃跑消息
+				return;
+			}
+			myServer.map.remove(user.getId());
+			System.out.println(user+"客户端在大厅退出");
+			MessageUtil.sendMessageToAll(myServer, user+"下线了!");
+			MessageUtil.sendUserListToAll(myServer);
 		}
 		
 	}
@@ -85,7 +99,7 @@ public class ServerReceiveThread implements Runnable{
 		 //申请对战
 		 if(str.startsWith("<FIGHT>")&&str.endsWith("<FIGHT>")) {
 			 String fightStr=str.trim().replace("<FIGHT>", "");
-			 int otherId=Integer.parseInt(fightStr);
+			 otherId=Integer.parseInt(fightStr);
 			 //玩家已经在对战中
 			 if(myServer.fightSet.contains(otherId)) {
 				 out.println("<FIGHT>ONFIGHT<FIGHT>");
@@ -98,8 +112,8 @@ public class ServerReceiveThread implements Runnable{
 		 if(str.startsWith("<STARTFIVE>")&&str.endsWith("<STARTFIVE>")) {
 			 String messageStr=str.trim().replace("<STARTFIVE>", "");
 			 //发送打开窗口信息,并把这两个玩家添加到set
-			 int otherUser=Integer.parseInt(messageStr);
-			 MessageUtil.fightWithUser(myServer, otherUser, user.getId());
+			 otherId=Integer.parseInt(messageStr);
+			 MessageUtil.fightWithUser(myServer, otherId, user.getId());
 			 return;
 		 }
 		 //接受下棋坐标
@@ -108,6 +122,42 @@ public class ServerReceiveThread implements Runnable{
 			 //给对手发送坐标
 			 MessageUtil.downQi(myServer, messageStr);
 			 return;
+		 }
+		 //逃跑
+		 if(str.startsWith("<TAOPAO>")&&str.endsWith("<TAOPAO>")) {
+			 ifs.taopao(user.getId());//记录逃跑
+			 ifs.win(otherId);//记录对方胜利
+			 myServer.fightSet.remove(user.getId());//从对战人中删除
+			 myServer.map.get(otherId).out.println("<TAOPAO>");//给对方发送逃跑消息
+			 return;
+		 }
+		 //关闭五子棋
+		 if(str.startsWith("<EXIT_FIVE_GAME>")&&str.endsWith("<EXIT_FIVE_GAME>")) {
+			 myServer.fightSet.remove(user.getId());//从对战人中删除
+			 if(myServer.fightSet.contains(otherId)) {
+				 myServer.map.get(otherId).out.println("<EXIT_FIVE_GAME>");//给对方发送退出消息
+			 }
+			 return;
+		 }
+		 //胜利
+		 if(str.startsWith("<WIN>")&&str.endsWith("<WIN>")) {
+			 ifs.win(user.getId());
+			 return;
+		 }
+		 //失败
+		 if(str.startsWith("<LOST>")&&str.endsWith("<LOST>")) {
+			 ifs.lost(user.getId());
+			 return;
+		 }
+		 //接受对战中聊天
+		 if(str.startsWith("<FIGHTMESSAGE>")&&str.endsWith("<FIGHTMESSAGE>")) {
+			 String messageStr=str.trim().replace("<FIGHTMESSAGE>", "");
+			 MessageUtil.sendMessageToFight(user.getId(),otherId,myServer, "[对战]"+user+":"+messageStr);
+			 return;
+		 }
+		 //接受到准备
+		 if(str.startsWith("<READY>")&&str.endsWith("<READY>")) {
+			 myServer.map.get(otherId).out.println("<READY>");
 		 }
 	 }
 

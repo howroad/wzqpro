@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.luhao.seivice.impl;
+package com.luhao.service.impl;
 
 import com.luhao.bean.FivePO;
 import com.luhao.bean.User;
@@ -28,6 +28,30 @@ public class FiveServiceImpl implements IFiveService {
 		fv.setUserNickName(user.getNickname());
 		fv.init();
 		return fv;
+	}
+
+	@Override
+	public void win(int userId) {
+		ifd.win(userId);
+		
+	}
+
+	@Override
+	public void lost(int userId) {
+		ifd.lost(userId);
+		
+	}
+
+	@Override
+	public void ping(int userId) {
+		ifd.ping(userId);
+		
+	}
+
+	@Override
+	public void taopao(int userId) {
+		ifd.taopao(userId);
+		
 	}
 
 }

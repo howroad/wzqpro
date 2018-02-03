@@ -6,7 +6,6 @@ package com.luhao.thread;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 import javax.swing.JOptionPane;
@@ -30,7 +29,6 @@ public class ClientReceiveThread implements Runnable {
 	private LoginFrame loginFrame;
 	private ChatFrame chatFrame;
 	private FiveMap fiveMap;
-	private boolean isFight, isStart, isReady, isMyTurn;
 
 	public ClientReceiveThread(Socket socket, LoginFrame loginFrame) {
 		this.socket = socket;
@@ -51,8 +49,9 @@ public class ClientReceiveThread implements Runnable {
 				receiveData(str);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "与服务器链接断开,游戏退出!");
+			System.exit(0);
+			//e.printStackTrace();
 		}
 
 	}
@@ -77,6 +76,9 @@ public class ClientReceiveThread implements Runnable {
 		if (str.startsWith("<MESSAGE>") && str.endsWith("<MESSAGE>")) {
 			String message = str.trim().replace("<MESSAGE>", "");
 			this.chatFrame.setShowTxt(message);
+			if(this.fiveMap!=null) {
+				this.fiveMap.setShowTxt(message);
+			}
 			return;
 		}
 		if (str.startsWith("<USERLIST>") && str.endsWith("<USERLIST>")) {
@@ -107,6 +109,23 @@ public class ClientReceiveThread implements Runnable {
 			fiveMap.otherDown(temp[0], temp[1]);
 			return;
 		}
+		if (str.startsWith("<TAOPAO>") && str.endsWith("<TAOPAO>")) {
+			JOptionPane.showMessageDialog(null, "对方逃跑,胜利!");
+			fiveMap.exit();
+			return;
+		}
+		if (str.startsWith("<EXIT_FIVE_GAME>") && str.endsWith("<EXIT_FIVE_GAME>")) {
+			JOptionPane.showMessageDialog(null, "对方已离开!");
+			fiveMap.exit();
+			return;
+		}
+		if (str.startsWith("<READY>") && str.endsWith("<READY>")) {
+				this.fiveMap.setShowTxt("对方已准备!");
+				if(this.fiveMap.isReady) {
+					this.fiveMap.start();
+				}
+			return;
+		}
 	}
 
 	private void enterYard() {
@@ -115,8 +134,13 @@ public class ClientReceiveThread implements Runnable {
 		loginFrame.dispose();
 	}
 	private void startFive(int otherUserId,int myColor) {
-		fiveMap = new FiveMap(socket,chatFrame,otherUserId,(byte)myColor);
-		fiveMap.setVisible(true);
-		chatFrame.setVisible(false);
+		if(fiveMap==null) {
+			fiveMap = new FiveMap(socket,chatFrame,otherUserId,(byte)myColor);
+			fiveMap.setVisible(true);
+			chatFrame.setVisible(false);
+		}else {
+			fiveMap.initAndStart((byte)myColor);
+		}
+
 	}
 }

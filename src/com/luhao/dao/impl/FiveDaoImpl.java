@@ -33,9 +33,7 @@ public class FiveDaoImpl extends BaseDaoAdapterImpl<FivePO,Integer> implements I
 		return dbrFive;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.luhao.dao.IFiveDao#findbyId(int)
-	 */
+
 	@Override
 	public FivePO findbyUserId(int userId) {
 		FivePO fp=null;
@@ -49,6 +47,61 @@ public class FiveDaoImpl extends BaseDaoAdapterImpl<FivePO,Integer> implements I
 		}
 		if(fp.getId()<1) {return null;}
 		return fp;
+	}
+
+
+	@Override
+	public void win(int userId) {
+		try {
+			DBSessionFactory.openSession().excuteUpdate("update tb_wzq set win=win+1 where user_id=?", userId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			DBSessionFactory.closeSession();
+		}
+		
+	}
+
+
+	@Override
+	public void lost(int userId) {
+		try {
+			DBSessionFactory.openSession().excuteUpdate("update tb_wzq set lost=lost+1 where user_id=?", userId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			DBSessionFactory.closeSession();
+		}
+		
+	}
+
+	@Override
+	public void ping(int userId) {
+		try {
+			DBSessionFactory.openSession().excuteUpdate("update tb_wzq set ping=ping+1 where user_id=?", userId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			DBSessionFactory.closeSession();
+		}
+		
+	}
+
+
+	@Override
+	public void taopao(int userId) {
+		try {
+			DBSessionFactory.openSession().excuteUpdate("update tb_wzq set taopao=taopao+1 where user_id=?", userId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			DBSessionFactory.closeSession();
+		}
+		
 	}
 
 }

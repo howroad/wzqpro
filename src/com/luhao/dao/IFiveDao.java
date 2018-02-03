@@ -14,4 +14,8 @@ import com.luhao.util.DBResult;
 public interface IFiveDao extends IBaseDao<FivePO,Integer>{
 	public DBResult addUser(DBResult dbr);
 	public FivePO findbyUserId(int id);
+	public void win(int userId);
+	public void lost(int userId);
+	public void ping(int userId);
+	public void taopao(int userId);
 }

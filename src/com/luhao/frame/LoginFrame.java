@@ -20,8 +20,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.luhao.bean.User;
-import com.luhao.seivice.impl.UserServiceImpl;
 import com.luhao.service.IUserService;
+import com.luhao.service.impl.UserServiceImpl;
 import com.luhao.thread.ClientReceiveThread;
 import com.luhao.util.CheckUtil;
 
@@ -91,6 +91,7 @@ public class LoginFrame extends JFrame {
 
 		} catch (UnknownHostException e2) {
 			JOptionPane.showMessageDialog(null, "链接失败!");
+			System.exit(0);
 			// e2.printStackTrace();
 		} catch (IOException e2) {
 			JOptionPane.showMessageDialog(null, "链接失败!");

@@ -14,6 +14,8 @@ public class FiveVO {
 	private String userNickName;
 	private int win;
 	private int lost;
+	private int ping;
+	private int taopao;
 	private int sum;
 	private int socore;
 	
@@ -23,8 +25,10 @@ public class FiveVO {
 	private String duanwei;
 	
 	public void init() {
+		this.sum=win+lost+ping+taopao;
 		this.shenglv=((double)win)/sum;
-		this.duanxianlv=((double)(sum-win-lost))/sum;
+		this.duanxianlv=((double)taopao)/sum;
+		this.socore=win-lost-10*taopao;
 		if(socore>1000) {
 			duanwei="8段";
 		}
@@ -113,5 +117,17 @@ public class FiveVO {
 	}
 	public void setDuanwei(String duanwei) {
 		this.duanwei = duanwei;
+	}
+	public int getPing() {
+		return ping;
+	}
+	public void setPing(int ping) {
+		this.ping = ping;
+	}
+	public int getTaopao() {
+		return taopao;
+	}
+	public void setTaopao(int taopao) {
+		this.taopao = taopao;
 	}
 }

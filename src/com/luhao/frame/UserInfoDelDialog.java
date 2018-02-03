@@ -6,8 +6,8 @@ package com.luhao.frame;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import com.luhao.seivice.impl.FiveServiceImpl;
 import com.luhao.service.IFiveService;
+import com.luhao.service.impl.FiveServiceImpl;
 import com.luhao.vo.FiveVO;
 
 /**

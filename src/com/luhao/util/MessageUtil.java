@@ -72,4 +72,8 @@ public class MessageUtil {
 		String answerY=udata[2];
 		myServer.map.get(secondId).out.println("<ANSWER>"+answerX+"&"+answerY+"<ANSWER>");
 	}
+	public static void sendMessageToFight(int userId,int otherId,MyServer myServer, String msg) {
+			myServer.map.get(userId).out.println("<MESSAGE>"+msg+"<MESSAGE>");
+			myServer.map.get(otherId).out.println("<MESSAGE>"+msg+"<MESSAGE>");	
+	}
 }
