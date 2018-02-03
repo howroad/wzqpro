@@ -19,25 +19,16 @@
 
 20180203改动:
 1.数据库微调
-mysql> desc tb_user;
-+------------+-------------+------+-----+---------+----------------+
-| Field      | Type        | Null | Key | Default | Extra          |
-+------------+-------------+------+-----+---------+----------------+
-| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
-| username   | varchar(20) | YES  |     | NULL    |                |
-| password   | varchar(20) | YES  |     | NULL    |                |
-| nickname   | varchar(20) | YES  |     | NULL    |                |
-| registtime | datetime    | YES  |     | NULL    |                |
-+------------+-------------+------+-----+---------+----------------+
-mysql> desc tb_wzq;
-+---------+---------+------+-----+---------+----------------+
-| Field   | Type    | Null | Key | Default | Extra          |
-+---------+---------+------+-----+---------+----------------+
-| id      | int(11) | NO   | PRI | NULL    | auto_increment |
-| user_id | int(11) | YES  |     | NULL    |                |
-| win     | int(11) | YES  |     | NULL    |                |
-| lost    | int(11) | YES  |     | NULL    |                |
-| ping    | int(11) | YES  |     | NULL    |                |
-| taopao  | int(11) | YES  |     | NULL    |                |
-| score   | int(11) | YES  |     | NULL    |                |
-+---------+---------+------+-----+---------+----------------+
+create table tb_user(id int auto_increment primary key,username varchar(20),password varchar(20),nickname varchar(20),registtime datetime);
+create table tb_wzq(id int auto_increment primary key,user_id int,win int,lost int,ping int,//平局taopao int,score int);
+2.实现了准备/逃跑/短线/下线等功能
+3.实现了对战中聊天功能
+4.实现了服务器下线的判断
+5.玩家状态改变更新列表
+6.输赢逃跑时数据库的写入
+7.改了一些BUG
+
+待完成:
+1.单机版算法更新
+2.求和/认输/悔棋功能
+3.私聊和群聊的切换
