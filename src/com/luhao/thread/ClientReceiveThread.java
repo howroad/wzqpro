@@ -34,7 +34,7 @@ public class ClientReceiveThread implements Runnable {
 		this.socket = socket;
 		this.loginFrame = loginFrame;
 		try {
-			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			br = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -43,7 +43,7 @@ public class ClientReceiveThread implements Runnable {
 	@Override
 	public void run() {
 		try {
-			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			br = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
 			String str = "";
 			while ((str = br.readLine()) != null) {
 				receiveData(str);

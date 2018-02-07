@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -54,6 +55,7 @@ public class LoginFrame extends JFrame {
 
 	private JButton loginBtn = new JButton("登陆");
 	private JButton registBtn = new JButton("注册");
+	private JButton danJiBtn = new JButton("单机");
 
 	public LoginFrame() {
 		this.setBounds(0, 0, 300, 200);
@@ -71,6 +73,7 @@ public class LoginFrame extends JFrame {
 
 		this.btnPanel.add(loginBtn);
 		this.btnPanel.add(registBtn);
+		this.btnPanel.add(danJiBtn);
 		this.contentPanel.add(btnPanel);
 
 		this.setTitle("在线GameV0.1");
@@ -86,17 +89,15 @@ public class LoginFrame extends JFrame {
 		try {
 			socket = new Socket("127.0.0.1", 60702);
 			receiveThread = new Thread(new ClientReceiveThread(socket, this));
-			out = new PrintWriter(socket.getOutputStream(), true);
+			this.out=new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"),true);
 			receiveThread.start();
 
 		} catch (UnknownHostException e2) {
 			JOptionPane.showMessageDialog(null, "链接失败!");
-			System.exit(0);
-			// e2.printStackTrace();
+			setBtn();
 		} catch (IOException e2) {
 			JOptionPane.showMessageDialog(null, "链接失败!");
-			System.exit(0);
-			// e2.printStackTrace();
+			setBtn();
 		}
 
 		this.loginBtn.addActionListener(new ActionListener() {
@@ -133,6 +134,17 @@ public class LoginFrame extends JFrame {
 				JOptionPane.showMessageDialog(null, "注册成功！");
 			}
 		});
+		this.danJiBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new FiveMapD().setVisible(true);
+				LoginFrame.this.dispose();
+			}
+			
+		});
 	}
-
+	private void setBtn() {
+		this.registBtn.setEnabled(false);
+		this.loginBtn.setEnabled(false);
+	}
 }

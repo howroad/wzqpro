@@ -4,7 +4,7 @@
 package com.luhao.util;
 
 import com.luhao.bean.User;
-import com.luhao.test.MyServer;
+import com.luhao.frame.ServerFrame;
 
 /**
  * @author howroad
@@ -31,29 +31,32 @@ public class MessageUtil {
 		}
 		return userId;
 	}
-	public static void sendMessageToAll(MyServer myServer, String msg) {
-		for (Integer i : myServer.map.keySet()) {
-			myServer.map.get(i).out.println("<MESSAGE>"+msg+"<MESSAGE>");
-			System.out.println("发送的是:<MESSAGE>"+msg+"<MESSAGE>");
+	public static void sendMessageToAll(ServerFrame serverFrame, String msg) {
+		for (Integer i : serverFrame.map.keySet()) {
+			serverFrame.map.get(i).out.println("<MESSAGE>"+msg+"<MESSAGE>");
+			serverFrame.showMessage("发送的是:<MESSAGE>"+msg+"<MESSAGE>");
 		}
 	}
-	public static void sendUserListToAll(MyServer myServer) {
+	public static void sendUserListToAll(ServerFrame serverFrame) {
 		String list="";
-		for(Integer in:myServer.map.keySet()) {
+		for(Integer in:serverFrame.map.keySet()) {
 			if(in>0) {
 				list+=in+"&";
 			}
 		}
-		list=list.substring(0, list.length()-1);
-		for (Integer i : myServer.map.keySet()) {
-			myServer.map.get(i).out.println("<USERLIST>"+list+"<USERLIST>");
+		if(list.length()>0) {
+			list=list.substring(0, list.length()-1);
+		}
+		
+		for (Integer i : serverFrame.map.keySet()) {
+			serverFrame.map.get(i).out.println("<USERLIST>"+list+"<USERLIST>");
 		}
 	}
-	public static void fightWithUser(MyServer myServer,int user1,int user2) {
-		myServer.map.get(user1).out.println("<OPENFIVE>"+user2+"&"+"1"+"<OPENFIVE>");
-		myServer.map.get(user2).out.println("<OPENFIVE>"+user1+"&"+"2"+"<OPENFIVE>");
-		myServer.fightSet.add(user1);
-		myServer.fightSet.add(user2);
+	public static void fightWithUser(ServerFrame serverFrame,int user1,int user2) {
+		serverFrame.map.get(user1).out.println("<OPENFIVE>"+user2+"&"+"1"+"<OPENFIVE>");
+		serverFrame.map.get(user2).out.println("<OPENFIVE>"+user1+"&"+"2"+"<OPENFIVE>");
+		serverFrame.fightSet.add(user1);
+		serverFrame.fightSet.add(user2);
 	}
 	public static int[] StringToOtherUserAndColor(String message) {
 		int[] result=new int[2];
@@ -65,15 +68,15 @@ public class MessageUtil {
 	public static int[] StringToAnswer(String message) {
 		return StringToOtherUserAndColor(message);
 	}
-	public static void downQi(MyServer myServer,String message) {
+	public static void downQi(ServerFrame serverFrame,String message) {
 		String[] udata=message.split("&");
 		int secondId=Integer.parseInt(udata[0]);
 		String answerX=udata[1];
 		String answerY=udata[2];
-		myServer.map.get(secondId).out.println("<ANSWER>"+answerX+"&"+answerY+"<ANSWER>");
+		serverFrame.map.get(secondId).out.println("<ANSWER>"+answerX+"&"+answerY+"<ANSWER>");
 	}
-	public static void sendMessageToFight(int userId,int otherId,MyServer myServer, String msg) {
-			myServer.map.get(userId).out.println("<MESSAGE>"+msg+"<MESSAGE>");
-			myServer.map.get(otherId).out.println("<MESSAGE>"+msg+"<MESSAGE>");	
+	public static void sendMessageToFight(int userId,int otherId,ServerFrame serverFrame, String msg) {
+			serverFrame.map.get(userId).out.println("<MESSAGE>"+msg+"<MESSAGE>");
+			serverFrame.map.get(otherId).out.println("<MESSAGE>"+msg+"<MESSAGE>");	
 	}
 }

@@ -28,7 +28,13 @@ create table tb_wzq(id int auto_increment primary key,user_id int,win int,lost i
 6.输赢逃跑时数据库的写入
 7.改了一些BUG
 
+20180207改动
+1.中文乱码问题
+2.数据库驱动加载问题
+3.添加单机版与电脑对战
+
 待完成:
 1.单机版算法更新
 2.求和/认输/悔棋功能
 3.私聊和群聊的切换
+

@@ -22,7 +22,7 @@ public class FiveDaoImpl extends BaseDaoAdapterImpl<FivePO,Integer> implements I
 		int userId=dbr.getGeneratedKey();
 		DBResult dbrFive=null;
 		try {
-			dbrFive=DBSessionFactory.openSession().excuteUpdate("insert into tb_wzq values(null,?,0,0,0,0)", userId);
+			dbrFive=DBSessionFactory.openSession().excuteUpdate("insert into tb_wzq values(null,?,0,0,0,0,0)", userId);
 			DBSessionFactory.closeSession();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

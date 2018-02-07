@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -112,7 +113,7 @@ public class ChatFrame extends JFrame{
 		
 		try {
 			//应该可以把LoginFrame的out传过来,但是不知道dispose了之后流还在不
-			this.out=new PrintWriter(this.socket.getOutputStream(),true);
+			this.out=new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream(),"UTF-8"),true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

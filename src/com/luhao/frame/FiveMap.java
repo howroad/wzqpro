@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -76,7 +77,7 @@ public class FiveMap extends JFrame{
 		this.otherUser=ius.getById(otherUserId);
 		this.chatFrame=chatFrame;
 		try {
-			this.out=new PrintWriter(socket.getOutputStream(),true);
+			this.out=new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"),true);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
